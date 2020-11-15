@@ -18,7 +18,16 @@ func As(err error, target interface{}) bool {
 }
 
 func Unwrap(err error) error {
-	return errors.Unwrap(err)
+	inner := errors.Unwrap(err)
+
+	switch inner.(type) {
+	case *traceError:
+		return Unwrap(inner)
+	case *msgError:
+		return Unwrap(inner)
+	default:
+		return inner
+	}
 }
 
 func Mark(format string, v ...interface{}) error {
